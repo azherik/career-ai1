@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Career AI — Интеллектуальный помощник по поиску работы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(6px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+          animation: {
+            fadeIn: 'fadeIn 0.28s ease-out forwards',
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col antialiased">
+
+  <!-- Шапка -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center text-white shadow-sm shadow-indigo-200 shrink-0">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-900">Career AI</span>
+            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+              Карьерный ассистент
+            </span>
+            <span id="header-test-badge" class="hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-900 text-indigo-300">
+              <i data-lucide="flask-conical" class="w-3 h-3"></i>
+              Тест
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block">
+            Умный анализ резюме и подготовка к собеседованию для любой профессии
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        id="open-settings-btn"
+        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium border transition-all cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40"
+      >
+        <span id="header-key-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>ИИ готов к работе</span>
+        <span id="header-model-label" class="hidden md:inline-block text-xs text-slate-400 font-normal">
+          (gemini-3.1-flash-lite-preview)
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-10">
+
+    <!-- ШАГ 1. ВВОД ДАННЫХ -->
+    <section aria-labelledby="step-1-heading" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-600 text-white text-sm font-bold shadow-xs shrink-0">
+            1
+          </span>
+          <div>
+            <h1 id="step-1-heading" class="text-xl sm:text-2xl font-bold text-slate-900">
+              Ввод данных
+            </h1>
+            <p class="text-sm text-slate-500">
+              Загрузите резюме и добавьте описание интересующей вакансии из любой сферы
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          <div class="relative flex items-center">
+            <i data-lucide="book-open" class="w-4 h-4 text-indigo-600 absolute left-3 pointer-events-none"></i>
+            <select
+              id="demo-select"
+              aria-label="Заполнить демо-данными"
+              class="w-full sm:w-auto pl-9 pr-8 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-50 text-indigo-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
+            >
+              <option value="">Заполнить демо-данными...</option>
+              <option value="architect-graduate">Архитектор (выпускник)</option>
+              <option value="marketer-student">Маркетолог (студент)</option>
+              <option value="junior-developer">Junior-разработчик</option>
+              <option value="teacher-to-hr">Смена профессии: учитель → HR-специалист</option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            id="clear-all-btn"
+            disabled
+            class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-all bg-slate-100/70 border-slate-200/70 text-slate-400 cursor-not-allowed"
+          >
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>Очистить всё</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Две карточки: Резюме и Вакансия -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Левая карточка: Ваше резюме -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+              </div>
+              <h2 class="font-semibold text-lg text-slate-900">Ваше резюме</h2>
+            </div>
+            <button
+              type="button"
+              id="clear-resume-btn"
+              class="hidden text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+            >
+              Очистить
+            </button>
+          </div>
+
+          <!-- Зона загрузки файла -->
+          <div
+            id="drop-zone"
+            class="mb-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:bg-slate-50/80 p-4 text-center transition-all cursor-pointer"
+          >
+            <input
+              id="resume-file-input"
+              type="file"
+              accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+              class="hidden"
+            />
+            <div id="drop-zone-idle" class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+              <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+              </div>
+              <div class="text-center sm:text-left">
+                <p class="text-sm font-medium text-slate-700">
+                  Перетащите файл сюда или
+                  <span class="text-indigo-600 underline decoration-indigo-300">выберите на устройстве</span>
+                </p>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Поддерживаются форматы PDF, DOCX, TXT (до 5 МБ)
+                </p>
+              </div>
+            </div>
+            <div id="drop-zone-loading" class="hidden items-center justify-center gap-2 py-1 text-indigo-600 text-sm font-medium">
+              <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+              <span>Извлекаю текст из файла...</span>
+            </div>
+          </div>
+
+          <div id="file-success-banner" class="hidden mb-3 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs items-center justify-between gap-2">
+            <span class="flex items-center gap-1.5 truncate">
+              <i data-lucide="file-check" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+              <span id="file-success-name" class="truncate"></span>
+            </span>
+            <button type="button" id="close-file-banner" class="text-emerald-600 hover:text-emerald-800 cursor-pointer" aria-label="Скрыть">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div id="file-error-banner" class="hidden mb-3 px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs items-start gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0 mt-0.5"></i>
+            <span id="file-error-text"></span>
+          </div>
+
+          <textarea
+            id="resume-textarea"
+            placeholder="Вставьте текст резюме или загрузите файл (PDF, DOCX, TXT)"
+            rows="10"
+            class="w-full flex-1 rounded-xl border border-slate-200 bg-slate-50/40 p-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-y min-h-[220px]"
+          ></textarea>
+        </div>
+
+        <!-- Правая карточка: Описание вакансии -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <i data-lucide="briefcase" class="w-5 h-5"></i>
+              </div>
+              <h2 class="font-semibold text-lg text-slate-900">Описание вакансии</h2>
+            </div>
+            <button
+              type="button"
+              id="clear-job-btn"
+              class="hidden text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+            >
+              Очистить
+            </button>
+          </div>
+
+          <p class="text-xs text-slate-500 mb-3">
+            Скопируйте обязанности, требования к кандидату и желаемые навыки из текста вакансии
+          </p>
+
+          <textarea
+            id="job-textarea"
+            placeholder="Вставьте текст вакансии с требованиями"
+            rows="13"
+            class="w-full flex-1 rounded-xl border border-slate-200 bg-slate-50/40 p-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-y min-h-[296px]"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Блок ошибки анализа -->
+      <div id="analysis-error-box" role="alert" class="hidden rounded-2xl border border-rose-200 bg-rose-50/90 p-4 sm:p-5 flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600 shrink-0 mt-0.5"></i>
+          <div class="text-sm text-rose-800">
+            <p class="font-semibold">Не удалось выполнить анализ</p>
+            <p id="analysis-error-text" class="mt-0.5 text-rose-700"></p>
+          </div>
+        </div>
+        <button
+          type="button"
+          id="analysis-error-settings-btn"
+          class="hidden shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium transition-colors cursor-pointer"
+        >
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          Параметры ИИ
+        </button>
+      </div>
+
+      <!-- Кнопка запуска анализа -->
+      <div class="flex flex-col items-center pt-1">
+        <button
+          type="button"
+          id="analyze-btn"
+          disabled
+          class="w-full sm:w-auto min-w-[290px] inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all bg-slate-200 text-slate-400 cursor-not-allowed"
+        >
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+          <span>Проанализировать соответствие</span>
+        </button>
+        <p id="analyze-hint" class="text-xs text-slate-400 mt-2.5">
+          Заполните оба поля выше, чтобы запустить анализ соответствия
+        </p>
+      </div>
+    </section>
+
+    <!-- ШАГ 2 И ШАГ 3 (появляются после анализа) -->
+    <div id="results-wrapper" class="hidden space-y-10">
+
+      <!-- ШАГ 2. РЕЗУЛЬТАТЫ АНАЛИЗА -->
+      <section aria-labelledby="step-2-heading" class="space-y-6 pt-4 border-t border-slate-200/80 animate-fadeIn">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-600 text-white text-sm font-bold shadow-xs shrink-0">
+              2
+            </span>
+            <div>
+              <h2 id="step-2-heading" class="text-xl sm:text-2xl font-bold text-slate-900">
+                Результаты анализа
+              </h2>
+              <p class="text-sm text-slate-500">
+                Детальный разбор вашего профиля относительно требований работодателя
+              </p>
+            </div>
+          </div>
+
+          <!-- Меню экспорта отчёта -->
+          <div class="relative self-start sm:self-auto" id="report-menu-wrapper">
+            <button
+              type="button"
+              id="report-menu-btn"
+              class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-indigo-50/70 text-indigo-700 border border-indigo-200 text-sm font-semibold shadow-2xs transition-all cursor-pointer"
+            >
+              <i data-lucide="file-down" class="w-4 h-4"></i>
+              <span id="report-menu-btn-label">Скачать отчёт анализа</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-indigo-500"></i>
+            </button>
+
+            <div id="report-menu-dropdown" class="hidden absolute right-0 mt-2 w-60 rounded-xl bg-white border border-slate-200 shadow-lg py-1.5 z-20 animate-fadeIn">
+              <button
+                type="button"
+                id="download-report-pdf-btn"
+                class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+              >
+                <i data-lucide="file-text" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                <div>
+                  <div class="font-semibold">Отчёт в PDF</div>
+                  <div class="text-[11px] text-slate-400">С оформлением и кириллицей</div>
+                </div>
+              </button>
+              <button
+                type="button"
+                id="download-report-txt-btn"
+                class="w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2.5 transition-colors cursor-pointer"
+              >
+                <i data-lucide="download" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                <div>
+                  <div class="font-semibold">Отчёт в TXT</div>
+                  <div class="text-[11px] text-slate-400">Простой текстовый документ</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="export-error-box" role="alert" class="hidden rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs sm:text-sm text-rose-800 items-center justify-between gap-3">
+          <span class="flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600 shrink-0"></i>
+            <span id="export-error-text"></span>
+          </span>
+          <button type="button" id="close-export-error" class="text-rose-600 hover:text-rose-800 cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- 1. Круговой индикатор соответствия -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 sm:p-8">
+          <div class="flex flex-col md:flex-row items-center gap-6 sm:gap-8">
+            <div class="relative w-36 h-36 flex items-center justify-center shrink-0">
+              <svg class="w-36 h-36 -rotate-90" viewBox="0 0 128 128">
+                <circle cx="64" cy="64" r="54" fill="transparent" stroke="#e2e8f0" stroke-width="10" />
+                <circle
+                  id="score-circle"
+                  cx="64"
+                  cy="64"
+                  r="54"
+                  fill="transparent"
+                  stroke="#ef4444"
+                  stroke-width="10"
+                  stroke-linecap="round"
+                  stroke-dasharray="339.292"
+                  stroke-dashoffset="339.292"
+                  class="transition-all duration-700 ease-out"
+                />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="score-number" class="text-3xl font-extrabold text-slate-900">0%</span>
+                <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider mt-0.5">Совпадение</span>
+              </div>
+            </div>
+
+            <div class="flex-1 text-center md:text-left space-y-3">
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+                <h3 class="text-lg sm:text-xl font-bold text-slate-900">Соответствие вакансии</h3>
+                <span id="score-badge" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border"></span>
+              </div>
+              <p id="score-summary" class="text-slate-700 text-base leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Данные из резюме -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 space-y-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Данные из резюме</h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="rounded-xl bg-slate-50/80 border border-slate-200/70 p-4">
+              <div class="flex items-center gap-2 text-sm font-semibold text-slate-800 mb-2.5">
+                <i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-600"></i>
+                <span>Образование</span>
+              </div>
+              <div id="extracted-education" class="text-sm text-slate-600"></div>
+            </div>
+
+            <div class="rounded-xl bg-slate-50/80 border border-slate-200/70 p-4">
+              <div class="flex items-center gap-2 text-sm font-semibold text-slate-800 mb-2.5">
+                <i data-lucide="award" class="w-4 h-4 text-indigo-600"></i>
+                <span>Ключевые навыки</span>
+              </div>
+              <div id="extracted-skills" class="text-sm text-slate-600"></div>
+            </div>
+
+            <div class="rounded-xl bg-slate-50/80 border border-slate-200/70 p-4">
+              <div class="flex items-center gap-2 text-sm font-semibold text-slate-800 mb-2.5">
+                <i data-lucide="briefcase" class="w-4 h-4 text-indigo-600"></i>
+                <span>Опыт и проекты</span>
+              </div>
+              <div id="extracted-experience" class="text-sm text-slate-600"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Анализ навыков -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 space-y-5">
+          <h3 class="text-lg font-bold text-slate-900">Анализ навыков и требований</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-3">
+              <div class="flex items-center gap-2 text-emerald-700 font-semibold text-sm">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600"></i>
+                <span id="matching-skills-title">Что уже подходит (0)</span>
+              </div>
+              <div id="matching-skills-list" class="space-y-2.5"></div>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-center gap-2 text-amber-700 font-semibold text-sm">
+                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600"></i>
+                <span id="missing-skills-title">Чего не хватает (0)</span>
+              </div>
+              <div id="missing-skills-list" class="space-y-2.5"></div>
+            </div>
+          </div>
+
+          <div id="feedback-skills_analysis"></div>
+        </div>
+
+        <!-- 4. Улучшение резюме -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 space-y-6">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Улучшение резюме</h3>
+            <p class="text-sm text-slate-500 mt-0.5">
+              Точечные правки по разделам и готовый обновлённый вариант текста
+            </p>
+          </div>
+
+          <div id="improvements-wrapper" class="space-y-3">
+            <h4 class="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+              Рекомендации по разделам
+            </h4>
+            <div id="improvements-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <div class="rounded-2xl border border-indigo-200/80 bg-gradient-to-b from-indigo-50/40 to-white p-5 sm:p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+              <div>
+                <h4 class="font-bold text-slate-900">Готовый улучшенный текст резюме</h4>
+                <p class="text-xs text-slate-500">
+                  Адаптирован под ключевые требования вакансии — можно скачать в PDF/TXT или скопировать
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  id="download-resume-pdf-btn"
+                  class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-2xs transition-all cursor-pointer"
+                >
+                  <i data-lucide="file-down" class="w-4 h-4"></i>
+                  <span>Скачать (PDF)</span>
+                </button>
+
+                <button
+                  type="button"
+                  id="download-resume-txt-btn"
+                  class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs transition-all cursor-pointer"
+                >
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                  <span>Скачать (TXT)</span>
+                </button>
+
+                <button
+                  type="button"
+                  id="copy-resume-btn"
+                  class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-all cursor-pointer"
+                >
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                  <span>Скопировать</span>
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="improved-resume-box"
+              class="rounded-xl bg-white border border-slate-200/90 p-4 sm:p-5 text-sm text-slate-800 whitespace-pre-wrap leading-relaxed font-normal max-h-[420px] overflow-y-auto"
+            ></div>
+          </div>
+
+          <div id="feedback-resume_improvement"></div>
+        </div>
+
+        <!-- 5. План развития на 4 недели -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="calendar" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">План развития на 4 недели</h3>
+                <p class="text-sm text-slate-500 mt-0.5">
+                  Персональная дорожная карта по закрытию недостающих навыков из анализа с практикой и трекером задач
+                </p>
+              </div>
+            </div>
+
+            <div id="plan-actions-initial">
+              <button
+                type="button"
+                id="generate-plan-btn"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer shrink-0"
+              >
+                <i data-lucide="target" class="w-4 h-4"></i>
+                <span>Составить план развития</span>
+              </button>
+            </div>
+
+            <div id="plan-actions-ready" class="hidden flex-wrap items-center gap-2.5 shrink-0">
+              <button
+                type="button"
+                id="download-plan-txt-btn"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+              >
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Скачать план (TXT)</span>
+              </button>
+              <button
+                type="button"
+                id="regenerate-plan-btn"
+                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition-colors cursor-pointer"
+                title="Пересобрать план развития"
+              >
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Обновить</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="plan-error-box" role="alert" class="hidden rounded-xl border border-rose-200 bg-rose-50/90 p-4 flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-start gap-2.5">
+              <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600 shrink-0 mt-0.5"></i>
+              <p id="plan-error-text" class="text-sm text-rose-800"></p>
+            </div>
+            <button type="button" id="plan-error-settings-btn" class="hidden shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-medium cursor-pointer">
+              <i data-lucide="settings" class="w-4 h-4"></i>
+              Параметры ИИ
+            </button>
+          </div>
+
+          <div id="plan-content-wrapper" class="hidden space-y-6 pt-2 border-t border-slate-100 animate-fadeIn">
+            <div id="plan-priority-skills-section" class="space-y-3">
+              <h4 id="plan-priority-skills-title" class="text-sm font-semibold text-slate-700 uppercase tracking-wider"></h4>
+              <div id="plan-priority-skills-list" class="grid grid-cols-1 gap-3.5"></div>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 class="text-sm font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                  <i data-lucide="list-checks" class="w-4 h-4 text-indigo-600"></i>
+                  <span>Интерактивный график по неделям (Недели 1–4)</span>
+                </h4>
+                <span id="plan-progress-badge" class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 self-start sm:self-auto">
+                  Выполнено задач: 0 из 0
+                </span>
+              </div>
+              <div id="plan-weeks-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div class="rounded-2xl border border-indigo-200/80 bg-gradient-to-r from-indigo-50/60 to-blue-50/50 p-5 sm:p-6 space-y-2">
+              <div class="flex items-center gap-2 text-indigo-950 font-bold text-base">
+                <i data-lucide="sparkles" class="w-5 h-5 text-indigo-600 shrink-0"></i>
+                <h4>Как обновится резюме после выполнения плана</h4>
+              </div>
+              <p id="plan-resume-after" class="text-sm text-slate-800 whitespace-pre-line leading-relaxed"></p>
+            </div>
+
+            <div id="feedback-development_plan"></div>
+          </div>
+        </div>
+
+        <!-- Телеметрия режима тестирования (Шаг 2) -->
+        <div id="step2-telemetry-box"></div>
+
+        <!-- 6. Сворачиваемый блок «На каких правилах работает ИИ» -->
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+          <button
+            type="button"
+            id="toggle-rules-btn"
+            aria-expanded="false"
+            class="w-full px-6 py-4 flex items-center justify-between gap-4 text-left hover:bg-slate-50/80 transition-colors cursor-pointer"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <i data-lucide="scale" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">На каких правилах работает ИИ</h3>
+                <p class="text-xs text-slate-500">
+                  9 разделов встроенной базы знаний HR-рекрутинга РК, ATS, этики и методики STAR
+                </p>
+              </div>
+            </div>
+            <span id="toggle-rules-label" class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg shrink-0">
+              <span>Подробнее</span>
+              <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </span>
+          </button>
+
+          <div id="rules-content" class="hidden px-6 pb-6 pt-2 border-t border-slate-100 space-y-3 animate-fadeIn">
+            <div id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ШАГ 3. ТРЕНАЖЁР СОБЕСЕДОВАНИЯ -->
+      <section aria-labelledby="step-3-heading" class="space-y-6 pt-4 border-t border-slate-200/80 animate-fadeIn">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-600 text-white text-sm font-bold shadow-xs">
+            3
+          </span>
+          <div>
+            <h2 id="step-3-heading" class="text-xl sm:text-2xl font-bold text-slate-900">
+              Тренажёр собеседования
+            </h2>
+            <p class="text-sm text-slate-500">
+              Практика ответов на 5 целевых вопросов по методике STAR с мгновенным разбором от ИИ
+            </p>
+          </div>
+        </div>
+
+        <div id="interview-error-box" role="alert" class="hidden rounded-2xl border border-rose-200 bg-rose-50/90 p-4 flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600 shrink-0 mt-0.5"></i>
+            <p id="interview-error-text" class="text-sm text-rose-800"></p>
+          </div>
+          <button type="button" id="interview-error-settings-btn" class="hidden shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium cursor-pointer">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            Параметры ИИ
+          </button>
+        </div>
+
+        <!-- Состояние 1: Стартовый экран -->
+        <div id="interview-start-card" class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 sm:p-8 text-center space-y-4">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+            <i data-lucide="message-square" class="w-7 h-7"></i>
+          </div>
+          <div class="max-w-xl mx-auto space-y-2">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900">
+              Готовы потренироваться перед реальным интервью?
+            </h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              ИИ составит 5 персональных вопросов с учётом требований вакансии и ваших зон роста, а затем оценит каждый ответ по структуре
+              <span class="font-semibold text-slate-800">STAR (Ситуация — Задача — Действие — Результат)</span>.
+            </p>
+          </div>
+          <div class="pt-2">
+            <button
+              type="button"
+              id="start-interview-btn"
+              class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-base shadow-sm shadow-indigo-200 transition-all cursor-pointer"
+            >
+              <span>Начать тренировку собеседования</span>
+              <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Состояние 2: Активный вопрос -->
+        <div id="interview-active-card" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-8 space-y-6">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-sm">
+              <span id="interview-progress-text" class="font-bold text-indigo-600">Вопрос 1 из 5</span>
+              <span id="interview-focus-badge" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600"></span>
+            </div>
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div id="interview-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-blue-600 transition-all duration-500" style="width: 20%"></div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 border border-slate-200/80 p-5 space-y-2">
+            <p id="interview-question-text" class="text-base sm:text-lg font-semibold text-slate-900 leading-snug"></p>
+            <p class="text-xs sm:text-sm text-slate-500">
+              <span class="font-medium text-indigo-600">Подсказка:</span>
+              <span id="interview-hint-text"></span>
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <label for="interview-answer-input" class="block text-sm font-medium text-slate-700">Ваш ответ</label>
+            <textarea
+              id="interview-answer-input"
+              placeholder="Опишите конкретный случай из опыта, учёбы или практики: какая была ситуация, какая стояла задача, что именно вы сделали и какой получили результат..."
+              rows="5"
+              class="w-full rounded-xl border border-slate-200 bg-white p-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:bg-slate-50 disabled:text-slate-600 transition-all"
+            ></textarea>
+
+            <div id="submit-answer-row" class="flex justify-end">
+              <button
+                type="button"
+                id="submit-answer-btn"
+                disabled
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all bg-slate-200 text-slate-400 cursor-not-allowed"
+              >
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>Отправить ответ</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Оценка STAR -->
+          <div id="star-evaluation-box" class="hidden pt-4 border-t border-slate-200 space-y-5 animate-fadeIn">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 rounded-xl p-4 border border-slate-200/80">
+              <div>
+                <h4 class="font-bold text-slate-900">Оценка ответа по методу STAR</h4>
+                <p class="text-xs text-slate-500">Анализ полноты структуры: Ситуация, Задача, Действие, Результат</p>
+              </div>
+              <div id="star-score-badge" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-base font-extrabold self-start sm:self-auto"></div>
+            </div>
+
+            <div id="star-breakdown-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5"></div>
+
+            <div class="rounded-xl bg-amber-50/70 border border-amber-200/80 p-4 space-y-1">
+              <h5 class="text-sm font-bold text-amber-950">Что улучшить</h5>
+              <p id="star-improve-text" class="text-sm text-amber-900/90 leading-relaxed"></p>
+            </div>
+
+            <div class="rounded-xl bg-indigo-50/60 border border-indigo-200/80 p-4 space-y-1.5">
+              <h5 class="text-sm font-bold text-indigo-950">Пример сильного ответа по STAR</h5>
+              <p id="star-strong-example" class="text-sm text-slate-800 leading-relaxed whitespace-pre-line"></p>
+            </div>
+
+            <div id="feedback-interview_evaluation"></div>
+
+            <div class="flex justify-end pt-2">
+              <button
+                type="button"
+                id="next-question-btn"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+              >
+                <span id="next-question-btn-label">Следующий вопрос</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Состояние 3: Итоги тренировки -->
+        <div id="interview-summary-card" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 sm:p-8 space-y-6 animate-fadeIn">
+          <div class="flex flex-col sm:flex-row items-center gap-5 pb-6 border-b border-slate-100">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+              <i data-lucide="trophy" class="w-8 h-8"></i>
+            </div>
+            <div class="text-center sm:text-left flex-1">
+              <h3 class="text-xl font-bold text-slate-900">Тренировка собеседования завершена!</h3>
+              <p id="interview-summary-subtitle" class="text-sm text-slate-500 mt-1"></p>
+            </div>
+            <div class="px-5 py-3 rounded-2xl bg-indigo-50 border border-indigo-100 text-center shrink-0">
+              <div id="interview-avg-score" class="text-2xl font-extrabold text-indigo-700">0 / 10</div>
+              <div class="text-xs font-medium text-indigo-600">Средний балл</div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="font-bold text-slate-900">Сводка по ответам и главные рекомендации</h4>
+            <div id="interview-history-list" class="space-y-3"></div>
+          </div>
+
+          <div class="pt-2 flex justify-center sm:justify-end">
+            <button
+              type="button"
+              id="restart-interview-btn"
+              class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+            >
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              <span>Пройти тренировку заново</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Телеметрия режима тестирования (Шаг 3) -->
+        <div id="step3-telemetry-box"></div>
+      </section>
+    </div>
+
+    <!-- Карточка обратной связи -->
+    <section aria-labelledby="feedback-card-heading" class="rounded-2xl border border-indigo-200/80 bg-gradient-to-r from-indigo-50/80 via-white to-blue-50/80 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs shadow-indigo-200">
+          <i data-lucide="message-circle-heart" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h2 id="feedback-card-heading" class="text-lg sm:text-xl font-bold text-slate-900">
+            Помогите улучшить Career AI
+          </h2>
+          <p class="text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
+            Поделитесь впечатлениями о точности анализа резюме, рекомендациях и тренажёре собеседования. Ваш отзыв поможет сделать сервис удобнее для кандидатов любых специальностей.
+          </p>
+        </div>
+      </div>
+
+      <a
+        href="https://forms.gle/UapcswCkBgHdhMrT8"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm shadow-indigo-200 transition-all"
+      >
+        <span>Оставить отзыв</span>
+        <i data-lucide="external-link" class="w-4 h-4"></i>
+      </a>
+    </section>
+  </main>
+
+  <!-- Подвал -->
+  <footer class="border-t border-slate-200/80 bg-white py-6 mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+      <span>Career AI — Интеллектуальный помощник для старта и развития карьеры</span>
+      <span>Универсальный анализ для любых профессий • Метод STAR</span>
+    </div>
+  </footer>
+
+  <!-- Модальное окно параметров ИИ -->
+  <div id="api-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl w-full max-w-md overflow-hidden max-h-[92vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="api-modal-title">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <h3 id="api-modal-title" class="font-semibold text-slate-900">Параметры работы ИИ</h3>
+        </div>
+        <button type="button" id="close-modal-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer" aria-label="Закрыть">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="api-settings-form" class="p-6 space-y-4">
+        <div class="rounded-xl bg-emerald-50/80 border border-emerald-200/80 p-3.5 text-xs text-emerald-950 flex items-start gap-2.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+          <span>
+            Доступ к искусственному интеллекту уже встроен в приложение. Никаких ключей вводить не нужно — просто загрузите резюме и описание вакансии.
+          </span>
+        </div>
+
+        <input id="gemini-api-key-input" type="hidden" value="" />
+
+        <div>
+          <label for="gemini-model-select" class="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1.5">
+            <i data-lucide="cpu" class="w-4 h-4 text-indigo-600"></i>
+            <span>Модель ИИ</span>
+          </label>
+          <select
+            id="gemini-model-select"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+          >
+            <option value="gemini-3.1-flash-lite-preview">gemini-3.1-flash-lite-preview (по умолчанию)</option>
+            <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          </select>
+        </div>
+
+        <!-- Переключатель Режим тестирования -->
+        <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5 flex items-center justify-between gap-3">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="flask-conical" class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5"></i>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Режим тестирования</p>
+              <p class="text-[11px] text-slate-500 leading-snug mt-0.5">
+                Показывать под результатами время ответа ИИ в секундах и количество токенов
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            id="testing-mode-switch"
+            role="switch"
+            aria-checked="false"
+            class="relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/30 cursor-pointer bg-slate-300"
+          >
+            <span id="testing-mode-knob" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+          </button>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">
+            Закрыть
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-all cursor-pointer">
+            Сохранить
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================================
+    // БАЗА ЗНАНИЙ И ДЕМО-ДАННЫЕ
+    // ============================================================================
+    const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
+    const GEMINI_PROXY_ENDPOINT = '/api/gemini';
+    const DEFAULT_GEMINI_MODEL = 'gemini-3.1-flash-lite-preview';
+    const PREFERRED_MODEL_ORDER = [
+      'gemini-3.1-flash-lite-preview',
+      'gemini-3-flash-preview',
+      'gemini-2.5-flash',
+    ];
+
+    const KNOWLEDGE_BASE = `
+1. ЧЕК-ЛИСТ HR-РЕКРУТЕРА (рынок труда Казахстана, стандарты hh.kz):
+- Резюме на 1–2 страницы, структура: контакты, цель/позиция, опыт, образование, навыки, языки, дополнительно.
+- Желаемая должность совпадает с названием вакансии.
+- Указаны город, готовность к переезду/удалённой работе, ссылки на портфолио, LinkedIn, GitHub или другие подтверждения.
+- Языки: казахский, русский, английский с уровнем.
+
+2. ПРОВЕРКА КЛЮЧЕВЫХ СЛОВ ДЛЯ ATS:
+- Сравни ключевые слова вакансии с текстом резюме; считай точные совпадения и синонимы.
+- Названия программ и терминов пиши так же, как в вакансии («Excel», «1С», «Figma», «Python», «Revit»).
+
+3. ФОРМУЛА ДОСТИЖЕНИЙ «Действие + Цифра/Результат»:
+- Каждый пункт опыта должен начинаться с глагола действия и содержать измеримый результат. Если цифр нет, предложи метрики, но НЕ выдумывай факты за кандидата.
+
+4. СПЕЦИФИКА ДЖУНИОР-СПЕЦИАЛИСТОВ, СТУДЕНТОВ И СМЕНЫ ПРОФЕССИИ В РК:
+- При отсутствии коммерческого опыта выноси вперёд учебные и конкурсные проекты, стажировки, практику, волонтёрство. При смене профессии выделяй переносимые навыки.
+
+5. ОТРАСЛЕВЫЕ ПОДСКАЗКИ:
+- Определи сферу вакансии по тексту, но требования бери СТРОГО из текста вакансии.
+
+6. КРИТЕРИИ ОЦЕНКИ СООТВЕТСТВИЯ (процент):
+- 50% обязательные требования вакансии, 25% ключевые слова и инструменты, 15% опыт и достижения, 10% образование и языки.
+
+7. ОЦЕНКА СОБЕСЕДОВАНИЯ ПО STAR:
+- Ситуация, Задача, Действие, Результат. Шкала 1–10. Из 5 вопросов 2–3 профессиональных/кейсовых и 2–3 поведенческих.
+
+8. ЭТИКА И ПЕРСОНАЛЬНЫЕ ДАННЫЕ:
+- Не учитывай пол, возраст, национальность, семейное положение, фото и религию. Мягко рекомендуй убрать лишние личные данные.
+
+9. УНИВЕРСАЛЬНОСТЬ ПО ПРОФЕССИЯМ:
+- Не добавляй в требования вакансии навыки, которых в ней нет, и не приписывай кандидату навыки, которых нет в резюме.
+`.trim();
+
+    const KNOWLEDGE_BASE_UI_SUMMARY = [
+      { number: '1', title: 'Чек-лист HR-рекрутера (рынок РК и hh.kz)', description: 'Проверка структуры резюме на 1–2 страницы, совпадения желаемой должности с вакансией, указания города, портфолио и уровня языков.' },
+      { number: '2', title: 'Проверка ключевых слов для ATS', description: 'Сравнение точных формулировок инструментов, технологий и обязанностей из вакансии с текстом резюме.' },
+      { number: '3', title: 'Формула достижений «Действие + Цифра/Результат»', description: 'Оценка глаголов действия и измеримых метрик. ИИ подсказывает, какие показатели добавить, не выдумывая факты.' },
+      { number: '4', title: 'Специфика джуниоров, студентов и свитчеров в РК', description: 'Учёт учебных и конкурсных проектов, стажировок, волонтёрства и переносимых навыков при смене профессии.' },
+      { number: '5', title: 'Отраслевые подсказки для любых специальностей', description: 'Автоопределение сферы вакансии (архитектура, IT, финансы, маркетинг, дизайн, образование и др.) строго по тексту вакансии.' },
+      { number: '6', title: 'Взвешенная формула оценки соответствия (%)', description: '50% — обязательные требования, 25% — ключевые слова и ПО, 15% — опыт и достижения, 10% — образование и языки.' },
+      { number: '7', title: 'Оценка собеседования по методу STAR', description: '5 вопросов и разбор ответов по блокам Ситуация–Задача–Действие–Результат по шкале 1–10.' },
+      { number: '8', title: 'Этика и приватность', description: 'Объективная оценка без учёта пола, возраста и фото; рекомендации по удалению лишних личных данных.' },
+      { number: '9', title: 'Универсальность по профессиям', description: 'Работа с любыми специальностями строго по тексту вакансии без выдумывания требований и опыта.' },
+    ];
+
+    const SYSTEM_PROMPT = `Ты — Career AI, универсальный карьерный консультант и HR-эксперт.
+1. Отвечай СТРОГО на русском языке.
+2. НИКОГДА не выдумывай факты, опыт или цифры о кандидате. Используй [укажите цифру/метрику], если данных не хватает.
+3. Проверь валидность текстов: если текст не похож на резюме или вакансию — верни {"isInvalidInput": true, "refusalMessage": "..."}.
+
+БАЗА ЗНАНИЙ:
+${KNOWLEDGE_BASE}`;
+
+    const DEMO_SCENARIOS = {
+      'architect-graduate': {
+        resumeText: `Алихан Сериков
+Начинающий архитектор (выпускник 2026 года) | Алматы
+
+Цель: Позиция младшего архитектора / архитектора в проектном бюро для участия в разработке жилых и общественных объектов.
+
+Образование:
+Казахская головная архитектурно-строительная академия (КазГАСА), бакалавр по специальности «Архитектура», 2022–2026. Средний балл (GPA): 3.65.
+
+Учебные и курсовые проекты:
+- Дипломный проект: «Многофункциональный жилой комплекс с благоустройством дворового пространства в г. Алматы» — разработка концепции, планировочных решений, фасадов и генплана.
+- Курсовой проект: «Общественное здание культурно-образовательного центра» — функциональное зонирование, объёмно-пространственная композиция.
+
+Опыт практики:
+Производственная практика в архитектурной мастерской (июнь – июль 2025, 2 месяца). Оформление чертежей планов этажей и разрезов, подготовка визуализаций.
+
+Навыки: AutoCAD, SketchUp, Adobe Photoshop, базовый InDesign.
+Языки: казахский (родной), русский (свободно), английский (A2).`,
+        jobText: `Вакансия: Архитектор | Город: Алматы | Формат: полный день, офис
+
+Обязанности:
+- Разработка архитектурных концепций, объёмно-планировочных и фасадных решений.
+- Выполнение проектной и рабочей документации на стадиях П и РД.
+- Создание информационных 3D-моделей зданий, оформление чертежей и ведомостей отделки.
+- Проверка проектных решений на соответствие строительным нормам РК (СП РК, СНиП РК).
+
+Требования:
+- Высшее архитектурное образование.
+- Опыт работы архитектором от 1 года.
+- Уверенное владение Autodesk Revit или ArchiCAD (обязательно), AutoCAD, Adobe Photoshop.
+- Знание строительных норм и правил РК (СП РК).
+- Наличие портфолио проектов.
+- Английский язык от B1 (Intermediate).`,
+      },
+      'marketer-student': {
+        resumeText: `Айгерим Нурланова
+Студентка 4 курса направления «Маркетинг и реклама»
+
+Образование: Университет Нархоз, специальность «Маркетинг», 2023–2027.
+Опыт:
+- Контент-мейкер студенческого сообщества в Instagram и Telegram (2024 – н.в.): написание постов, сторис, анонсирование мероприятий.
+- Учебная практика в кофейне (1 месяц): сетка публикаций, фото/видео на смартфон.
+Навыки: Canva, Figma (базовый), копирайтинг, базовая статистика Instagram, MS Excel.`,
+        jobText: `Вакансия: Маркетолог (Junior)
+Задачи: контент-план, запуск таргетированной рекламы в Meta Ads и TikTok Ads, аналитика в Google Analytics 4 и Яндекс Метрика, отчётность по CTR, CPC, CPL, ROMI.
+Требования: профильное образование, опыт настройки таргетированной рекламы, знание Google Analytics 4, портфолио кейсов с измеримыми результатами.`,
+      },
+      'junior-developer': {
+        resumeText: `Данияр Касымов
+Junior Python-разработчик
+Образование: МУИТ, бакалавр «Информационные системы», 2022–2026.
+Проекты (GitHub):
+- Веб-приложение учёта личных финансов: Python (Flask), PostgreSQL, REST API.
+- Telegram-бот расписания занятий: Python (aiogram), SQLite.
+Навыки: Python 3, SQL (PostgreSQL, SQLite), Git (базовый), Linux. Английский A2.`,
+        jobText: `Вакансия: Junior Python-разработчик
+Требования: Python 3, опыт работы с Django или FastAPI, PostgreSQL, уверенный Git (ветки, pull request), опыт работы с Docker и Docker Compose, опыт командной разработки, английский B1+.`,
+      },
+      'teacher-to-hr': {
+        resumeText: `Елена Соколова
+Учитель русского языка и литературы (5 лет опыта), переход в HR
+Опыт: Средняя школа № 45 (2021–2026) — коммуникация с 120+ учениками и родителями, проведение собеседований при отборе в профильные классы, организация мероприятий на 50–150 человек, отчётность в MS Excel, наставничество стажёров.
+Образование: КазНПУ им. Абая (филология), онлайн-курс «Основы HR и рекрутинг» (2026).`,
+        jobText: `Вакансия: HR-специалист (рекрутер)
+Обязанности: полный цикл подбора персонала, поиск резюме на hh.kz, проведение собеседований, работа в 1С:ЗУП / ATS, ведение кадрового делопроизводства.
+Требования: высшее образование, навыки проведения интервью, уверенная работа с hh.kz, знание кадрового делопроизводства, MS Excel.`,
+      },
+    };
+
+    // ============================================================================
+    // СОСТОЯНИЕ И УТИЛИТЫ
+    // ============================================================================
+    const STORAGE_KEYS = {
+      API_KEY: 'careerai_gemini_api_key',
+      MODEL: 'careerai_gemini_model',
+      TESTING: 'careerai_testing_mode',
+      FEEDBACK: 'careerai_section_feedback_stats',
+    };
+
+    const state = {
+      apiKey: localStorage.getItem(STORAGE_KEYS.API_KEY) || '',
+      selectedModel: localStorage.getItem(STORAGE_KEYS.MODEL) || DEFAULT_GEMINI_MODEL,
+      isTestingMode: localStorage.getItem(STORAGE_KEYS.TESTING) === 'true',
+      modalTestingMode: false,
+      resumeText: '',
+      jobText: '',
+      selectedDemoId: '',
+      isAnalyzing: false,
+      analysisResult: null,
+      developmentPlan: null,
+      isGeneratingPlan: false,
+      completedTaskIds: {},
+      interviewQuestions: [],
+      interviewIndex: 0,
+      interviewHistory: [],
+      isGeneratingInterview: false,
+      isEvaluatingAnswer: false,
+      latestTelemetry: null,
+    };
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function refreshIcons() {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function loadExternalScript(src) {
+      return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+          resolve();
+          return;
+        }
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error(`Не удалось загрузить модуль: ${src}`));
+        document.head.appendChild(s);
+      });
+    }
+
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function parseGeminiJson(rawText) {
+      const cleaned = rawText
+        .trim()
+        .replace(/^```(?:json)?\s*/i, '')
+        .replace(/\s*```$/i, '')
+        .trim();
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        const firstBrace = cleaned.indexOf('{');
+        const lastBrace = cleaned.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+        }
+        throw new Error('Не удалось разобрать ответ ИИ. Попробуйте повторить запрос.');
+      }
+    }
+
+    // ============================================================================
+    // РАБОТА С GEMINI API
+    // ============================================================================
+    async function executeSingleModelRequest(cleanKey, modelId, prompt, temperature, operationLabel) {
+      const useDirectKey = Boolean(cleanKey);
+      const url = useDirectKey
+        ? `${GEMINI_API_BASE}/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(cleanKey)}`
+        : GEMINI_PROXY_ENDPOINT;
+      const startedAt = performance.now();
+
+      let response;
+      try {
+        response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...(useDirectKey ? {} : { model: modelId }),
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature,
+            },
+          }),
+        });
+      } catch {
+        const err = new Error('Ошибка сети при подключении к серверу ИИ. Проверьте интернет-соединение.');
+        err.code = 'NETWORK';
+        throw err;
+      }
+
+      if (!response.ok) {
+        let apiMessage = `Ошибка сервера ИИ (код ${response.status})`;
+        try {
+          const errData = await response.json();
+          if (errData?.error?.message) apiMessage = errData.error.message;
+          else if (typeof errData?.error === 'string') apiMessage = errData.error;
+        } catch {}
+
+        const lower = apiMessage.toLowerCase();
+        const isInvalidKey =
+          (response.status === 400 || response.status === 401 || response.status === 403) &&
+          (lower.includes('api key') || lower.includes('api_key_invalid') || lower.includes('permission denied') || lower.includes('unauthenticated'));
+
+        const err = new Error(
+          isInvalidKey
+            ? `Ошибка ключа Gemini API. Проверьте настройки или переменную сервера. (${apiMessage})`
+            : `Сервис Gemini отклонил запрос: ${apiMessage}`
+        );
+        err.code = isInvalidKey ? 'INVALID_KEY' : 'API_ERROR';
+        throw err;
+      }
+
+      const payload = await response.json();
+      const durationSec = Number(((performance.now() - startedAt) / 1000).toFixed(2));
+      const usage = payload?.usageMetadata;
+      const telemetry = {
+        operationLabel,
+        model: modelId,
+        durationSec,
+        promptTokens: typeof usage?.promptTokenCount === 'number' ? usage.promptTokenCount : undefined,
+        candidatesTokens: typeof usage?.candidatesTokenCount === 'number' ? usage.candidatesTokenCount : undefined,
+        totalTokens: typeof usage?.totalTokenCount === 'number' ? usage.totalTokenCount : undefined,
+        timestamp: new Date().toLocaleTimeString('ru-RU'),
+      };
+
+      const candidateText = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!candidateText) {
+        throw new Error('Gemini не сформировал текстовый ответ. Попробуйте повторить запрос.');
+      }
+
+      return { data: parseGeminiJson(candidateText), telemetry };
+    }
+
+    async function callGeminiApi(prompt, temperature = 0.4, operationLabel = 'Запрос к ИИ') {
+      const cleanKey = state.apiKey.trim();
+      const initialModel = (state.selectedModel || DEFAULT_GEMINI_MODEL).replace(/^models\//, '').trim();
+
+      try {
+        const res = await executeSingleModelRequest(cleanKey, initialModel, prompt, temperature, operationLabel);
+        state.latestTelemetry = res.telemetry;
+        renderTelemetry();
+        return res.data;
+      } catch (firstErr) {
+        if (firstErr.code === 'NETWORK' || firstErr.code === 'INVALID_KEY') throw firstErr;
+
+        const fallbacks = PREFERRED_MODEL_ORDER.filter((m) => m !== initialModel);
+        let lastErr = firstErr;
+        for (const candidateModel of fallbacks) {
+          try {
+            const res = await executeSingleModelRequest(cleanKey, candidateModel, prompt, temperature, operationLabel);
+            state.selectedModel = candidateModel;
+            localStorage.setItem(STORAGE_KEYS.MODEL, candidateModel);
+            updateHeaderStatus();
+            state.latestTelemetry = res.telemetry;
+            renderTelemetry();
+            return res.data;
+          } catch (candErr) {
+            if (candErr.code === 'NETWORK' || candErr.code === 'INVALID_KEY') throw candErr;
+            lastErr = candErr;
+          }
+        }
+        throw lastErr;
+      }
+    }
+
+    // ============================================================================
+    // ПАРСИНГ ФАЙЛОВ В БРАУЗЕРЕ (PDF / DOCX / TXT)
+    // ============================================================================
+    async function parseResumeFile(file) {
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Размер файла превышает 5 МБ. Загрузите файл меньшего размера.');
+      }
+      const lowerName = file.name.toLowerCase();
+      let extracted = '';
+
+      if (lowerName.endsWith('.txt') || file.type === 'text/plain') {
+        const buffer = await file.arrayBuffer();
+        let text = new TextDecoder('utf-8', { fatal: false }).decode(buffer);
+        if (text.includes('\uFFFD')) {
+          text = new TextDecoder('windows-1251', { fatal: false }).decode(buffer);
+        }
+        extracted = text;
+      } else if (lowerName.endsWith('.pdf') || file.type === 'application/pdf') {
+        await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+        const pdfjsLib = window.pdfjsLib;
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({
+          data: new Uint8Array(arrayBuffer),
+          cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+          cMapPacked: true,
+          standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/',
+        }).promise;
+        const pages = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const lines = [];
+          let line = '';
+          let lastY = null;
+          for (const item of content.items) {
+            const str = typeof item.str === 'string' ? item.str : '';
+            const y = Array.isArray(item.transform) ? item.transform[5] : null;
+            if (lastY !== null && y !== null && Math.abs(y - lastY) > 4) {
+              if (line.trim()) lines.push(line.trim());
+              line = str;
+            } else {
+              line += (line && str ? ' ' : '') + str;
+            }
+            if (y !== null) lastY = y;
+          }
+          if (line.trim()) lines.push(line.trim());
+          pages.push(lines.join('\n'));
+        }
+        extracted = pages.join('\n\n');
+      } else if (lowerName.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await window.mammoth.extractRawText({ arrayBuffer });
+        extracted = result?.value || '';
+      } else {
+        throw new Error('Неподдерживаемый формат. Загрузите файл в формате PDF, DOCX или TXT.');
+      }
+
+      const cleaned = extracted.replace(/\u0000/g, '').trim();
+      if (!cleaned) {
+        throw new Error('Не удалось прочитать файл, вставьте текст резюме вручную.');
+      }
+      return cleaned;
+    }
+
+    // ============================================================================
+    // ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ШАГА 1 И НАСТРОЕК
+    // ============================================================================
+    function updateHeaderStatus() {
+      const modelLabel = document.getElementById('header-model-label');
+      const keyDot = document.getElementById('header-key-dot');
+      const testBadge = document.getElementById('header-test-badge');
+
+      modelLabel.textContent = `(${state.selectedModel})`;
+      keyDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+      keyDot.title = 'Работает встроенный серверный доступ ИИ';
+
+      if (state.isTestingMode) {
+        testBadge.classList.remove('hidden');
+      } else {
+        testBadge.classList.add('hidden');
+      }
+    }
+
+    function updateStep1Controls() {
+      const hasResume = state.resumeText.trim().length > 0;
+      const hasJob = state.jobText.trim().length > 0;
+      const hasAny = hasResume || hasJob || Boolean(state.selectedDemoId);
+      const canAnalyze = hasResume && hasJob && !state.isAnalyzing;
+
+      const clearResumeBtn = document.getElementById('clear-resume-btn');
+      const clearJobBtn = document.getElementById('clear-job-btn');
+      const clearAllBtn = document.getElementById('clear-all-btn');
+      const analyzeBtn = document.getElementById('analyze-btn');
+      const analyzeHint = document.getElementById('analyze-hint');
+
+      clearResumeBtn.classList.toggle('hidden', !hasResume);
+      clearJobBtn.classList.toggle('hidden', !hasJob);
+
+      if (hasAny && !state.isAnalyzing) {
+        clearAllBtn.disabled = false;
+        clearAllBtn.className = 'inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-all bg-white border-slate-200 text-slate-600 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 cursor-pointer';
+      } else {
+        clearAllBtn.disabled = true;
+        clearAllBtn.className = 'inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-all bg-slate-100/70 border-slate-200/70 text-slate-400 cursor-not-allowed';
+      }
+
+      if (state.isAnalyzing) {
+        analyzeBtn.disabled = true;
+        analyzeBtn.className = 'w-full sm:w-auto min-w-[290px] inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all bg-indigo-500 text-white cursor-wait';
+        analyzeBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Анализирую...</span>';
+      } else if (canAnalyze) {
+        analyzeBtn.disabled = false;
+        analyzeBtn.className = 'w-full sm:w-auto min-w-[290px] inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-md shadow-indigo-200/80 hover:shadow-lg cursor-pointer';
+        analyzeBtn.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i><span>Проанализировать соответствие</span>';
+      } else {
+        analyzeBtn.disabled = true;
+        analyzeBtn.className = 'w-full sm:w-auto min-w-[290px] inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold transition-all bg-slate-200 text-slate-400 cursor-not-allowed';
+        analyzeBtn.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5"></i><span>Проанализировать соответствие</span>';
+      }
+
+      analyzeHint.classList.toggle('hidden', hasResume && hasJob);
+      refreshIcons();
+    }
+
+    function showAnalysisError(message, showSettingsBtn) {
+      const box = document.getElementById('analysis-error-box');
+      const text = document.getElementById('analysis-error-text');
+      const btn = document.getElementById('analysis-error-settings-btn');
+      text.textContent = message;
+      box.classList.remove('hidden');
+      box.classList.add('flex');
+      btn.classList.toggle('hidden', !showSettingsBtn);
+    }
+
+    function hideAnalysisError() {
+      const box = document.getElementById('analysis-error-box');
+      box.classList.add('hidden');
+      box.classList.remove('flex');
+    }
+
+    // ============================================================================
+    // ОЦЕНКА КАЧЕСТВА БЛОКОВ (👍 / 👎) И ТЕЛЕМЕТРИЯ
+    // ============================================================================
+    function getFeedbackStats() {
+      const def = {
+        counts: {
+          skills_analysis: { helpful: 0, inaccurate: 0 },
+          resume_improvement: { helpful: 0, inaccurate: 0 },
+          development_plan: { helpful: 0, inaccurate: 0 },
+          interview_evaluation: { helpful: 0, inaccurate: 0 },
+        },
+        comments: [],
+      };
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.FEEDBACK);
+        if (!raw) return def;
+        const parsed = JSON.parse(raw);
+        return { ...def, ...parsed, counts: { ...def.counts, ...(parsed.counts || {}) } };
+      } catch {
+        return def;
+      }
+    }
+
+    function mountSectionFeedbackBar(containerId, sectionKey, sectionTitle) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      let selectedVote = null;
+
+      function render() {
+        const stats = getFeedbackStats().counts[sectionKey] || { helpful: 0, inaccurate: 0 };
+        container.innerHTML = `
+          <div class="pt-4 mt-4 border-t border-slate-100 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <span class="text-xs font-medium text-slate-500">Оцените качество блока «${escapeHtml(sectionTitle)}»:</span>
+              <div class="flex items-center gap-2">
+                <button type="button" data-vote="helpful" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                  selectedVote === 'helpful'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 shadow-2xs'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/50 hover:border-emerald-200 hover:text-emerald-700'
+                }">
+                  <span>👍 Полезно</span>
+                  ${stats.helpful > 0 ? `<span class="ml-0.5 text-[11px] opacity-75">(${stats.helpful})</span>` : ''}
+                </button>
+                <button type="button" data-vote="inaccurate" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                  selectedVote === 'inaccurate'
+                    ? 'bg-amber-50 text-amber-800 border-amber-300 shadow-2xs'
+                    : 'bg-white text-slate-600 border-slate-200 hover:bg-amber-50/50 hover:border-amber-200 hover:text-amber-800'
+                }">
+                  <span>👎 Не точно</span>
+                  ${stats.inaccurate > 0 ? `<span class="ml-0.5 text-[11px] opacity-75">(${stats.inaccurate})</span>` : ''}
+                </button>
+              </div>
+            </div>
+            ${
+              selectedVote === 'helpful'
+                ? '<p class="text-xs text-emerald-700 bg-emerald-50/70 border border-emerald-200/70 rounded-xl px-3 py-2">Спасибо за оценку! Счётчик полезности сохранён локально.</p>'
+                : ''
+            }
+            ${
+              selectedVote === 'inaccurate'
+                ? `<div class="rounded-xl bg-amber-50/60 border border-amber-200/80 p-3.5 space-y-2.5 animate-fadeIn">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs font-semibold text-amber-950">Что не так? <span class="font-normal text-amber-800">(необязательно)</span></span>
+                      <span class="text-[11px] text-amber-700">Сохраняется только комментарий без текста резюме</span>
+                    </div>
+                    <form data-comment-form class="flex flex-col sm:flex-row gap-2">
+                      <input type="text" placeholder="Например: не учтён навык из практики или слишком общие советы..." class="flex-1 rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400/30" />
+                      <button type="submit" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition-colors cursor-pointer shrink-0">Сохранить отзыв</button>
+                    </form>
+                  </div>`
+                : ''
+            }
+          </div>
+        `;
+
+        container.querySelectorAll('button[data-vote]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const vote = btn.getAttribute('data-vote');
+            if (selectedVote === vote) return;
+            const current = getFeedbackStats();
+            if (selectedVote) {
+              current.counts[sectionKey][selectedVote] = Math.max(0, current.counts[sectionKey][selectedVote] - 1);
+            }
+            current.counts[sectionKey][vote] += 1;
+            localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(current));
+            selectedVote = vote;
+            render();
+          });
+        });
+
+        const form = container.querySelector('form[data-comment-form]');
+        if (form) {
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = form.querySelector('input');
+            const val = (input.value || '').trim().slice(0, 1000);
+            if (!val) return;
+            const current = getFeedbackStats();
+            current.comments.push({ section: sectionKey, comment: val, timestamp: new Date().toISOString() });
+            localStorage.setItem(STORAGE_KEYS.FEEDBACK, JSON.stringify(current));
+            form.outerHTML = '<div class="text-xs text-emerald-800 bg-white border border-emerald-200 rounded-lg px-3 py-2">Комментарий сохранён. Спасибо за помощь в тестировании!</div>';
+          });
+        }
+      }
+
+      render();
+    }
+
+    function renderTelemetry() {
+      const box2 = document.getElementById('step2-telemetry-box');
+      const box3 = document.getElementById('step3-telemetry-box');
+      if (!state.isTestingMode || !state.latestTelemetry) {
+        if (box2) box2.innerHTML = '';
+        if (box3) box3.innerHTML = '';
+        return;
+      }
+
+      const t = state.latestTelemetry;
+      const hasTokens = typeof t.totalTokens === 'number' || typeof t.promptTokens === 'number';
+      const html = `
+        <div class="rounded-2xl border border-indigo-200/90 bg-slate-900 text-slate-100 p-4 sm:p-5 shadow-xs space-y-3 animate-fadeIn">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i data-lucide="flask-conical" class="w-4 h-4 text-indigo-400"></i>
+              <span class="text-xs font-bold uppercase tracking-wider text-indigo-300">Режим тестирования • Телеметрия ИИ</span>
+            </div>
+            <span class="text-[11px] text-slate-400">${escapeHtml(t.operationLabel)} • ${escapeHtml(t.timestamp)}</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="rounded-xl bg-slate-800/80 border border-slate-700/80 p-3 flex items-center gap-2.5">
+              <i data-lucide="clock" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+              <div>
+                <div class="text-slate-400">Время ответа ИИ</div>
+                <div class="text-sm font-bold text-white mt-0.5">${t.durationSec.toFixed(2)} сек.</div>
+              </div>
+            </div>
+            <div class="rounded-xl bg-slate-800/80 border border-slate-700/80 p-3 flex items-center gap-2.5">
+              <i data-lucide="activity" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+              <div>
+                <div class="text-slate-400">Токены (API)</div>
+                <div class="text-sm font-bold text-white mt-0.5">${hasTokens ? `${t.totalTokens ?? '—'} всего` : 'Не возвращены API'}</div>
+                ${hasTokens ? `<div class="text-[11px] text-slate-400 mt-0.5">Вход: ${t.promptTokens ?? '—'} • Выход: ${t.candidatesTokens ?? '—'}</div>` : ''}
+              </div>
+            </div>
+            <div class="rounded-xl bg-slate-800/80 border border-slate-700/80 p-3 flex items-center gap-2.5">
+              <i data-lucide="cpu" class="w-4 h-4 text-blue-400 shrink-0"></i>
+              <div class="min-w-0">
+                <div class="text-slate-400">Модель</div>
+                <div class="text-sm font-bold text-white mt-0.5 truncate">${escapeHtml(t.model)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      if (box2) box2.innerHTML = html;
+      if (box3 && state.interviewQuestions.length > 0) box3.innerHTML = html;
+      refreshIcons();
+    }
+
+    // ============================================================================
+    // ШАГ 2: РЕНДЕР РЕЗУЛЬТАТОВ АНАЛИЗА И ПЛАНА РАЗВИТИЯ
+    // ============================================================================
+    function renderAnalysisResults(result) {
+      const wrapper = document.getElementById('results-wrapper');
+      wrapper.classList.remove('hidden');
+
+      const score = Math.max(0, Math.min(100, Math.round(Number(result.matchScore) || 0)));
+      const circumference = 2 * Math.PI * 54;
+      const offset = circumference - (score / 100) * circumference;
+
+      let strokeColor = '#ef4444';
+      let badgeClasses = 'bg-rose-50 text-rose-700 border-rose-200';
+      let statusLabel = 'Низкое соответствие — требуется доработка резюме';
+      if (score >= 75) {
+        strokeColor = '#10b981';
+        badgeClasses = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        statusLabel = 'Высокое соответствие — отличные шансы на приглашение';
+      } else if (score >= 50) {
+        strokeColor = '#f59e0b';
+        badgeClasses = 'bg-amber-50 text-amber-700 border-amber-200';
+        statusLabel = 'Среднее соответствие — есть хорошая база и точки роста';
+      }
+
+      const circle = document.getElementById('score-circle');
+      circle.setAttribute('stroke', strokeColor);
+      circle.style.strokeDashoffset = String(offset);
+      document.getElementById('score-number').textContent = `${score}%`;
+
+      const badge = document.getElementById('score-badge');
+      badge.className = `inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${badgeClasses}`;
+      badge.textContent = statusLabel;
+      document.getElementById('score-summary').textContent = result.summary;
+
+      const eduBox = document.getElementById('extracted-education');
+      eduBox.innerHTML = result.extractedData.education.length
+        ? `<ul class="space-y-2">${result.extractedData.education.map((e) => `<li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0"></span><span>${escapeHtml(e)}</span></li>`).join('')}</ul>`
+        : '<p class="text-slate-400">Информация об образовании не найдена</p>';
+
+      const skillsBox = document.getElementById('extracted-skills');
+      skillsBox.innerHTML = result.extractedData.skills.length
+        ? `<div class="flex flex-wrap gap-1.5">${result.extractedData.skills.map((s) => `<span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-white text-indigo-700 border border-indigo-100 shadow-2xs">${escapeHtml(s)}</span>`).join('')}</div>`
+        : '<p class="text-slate-400">Навыки не выделены</p>';
+
+      const expBox = document.getElementById('extracted-experience');
+      expBox.innerHTML = result.extractedData.experience.length
+        ? `<ul class="space-y-2">${result.extractedData.experience.map((e) => `<li class="flex items-start gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></span><span>${escapeHtml(e)}</span></li>`).join('')}</ul>`
+        : '<p class="text-slate-400">Опыт не указан</p>';
+
+      document.getElementById('matching-skills-title').textContent = `Что уже подходит (${result.matchingSkills.length})`;
+      document.getElementById('matching-skills-list').innerHTML = result.matchingSkills.length
+        ? result.matchingSkills.map((m) => `
+            <div class="rounded-xl bg-emerald-50/70 border border-emerald-200/80 p-3.5">
+              <p class="font-semibold text-sm text-emerald-950">${escapeHtml(m.skill)}</p>
+              <p class="text-xs sm:text-sm text-emerald-800/90 mt-1 leading-relaxed">${escapeHtml(m.explanation)}</p>
+            </div>`).join('')
+        : '<p class="text-sm text-slate-500 bg-slate-50 p-4 rounded-xl">Явных совпадений не обнаружено — обратите внимание на рекомендации ниже.</p>';
+
+      document.getElementById('missing-skills-title').textContent = `Чего не хватает (${result.missingSkills.length})`;
+      document.getElementById('missing-skills-list').innerHTML = result.missingSkills.length
+        ? result.missingSkills.map((m) => `
+            <div class="rounded-xl bg-amber-50/70 border border-amber-200/80 p-3.5">
+              <p class="font-semibold text-sm text-amber-950">${escapeHtml(m.skill)}</p>
+              <p class="text-xs sm:text-sm text-amber-900/90 mt-1 leading-relaxed">${escapeHtml(m.explanation)}</p>
+            </div>`).join('')
+        : '<p class="text-sm text-emerald-700 bg-emerald-50 p-4 rounded-xl">Критичных пробелов по требованиям вакансии не выявлено!</p>';
+
+      const impWrapper = document.getElementById('improvements-wrapper');
+      impWrapper.classList.toggle('hidden', result.improvements.length === 0);
+      document.getElementById('improvements-list').innerHTML = result.improvements.map((imp) => `
+        <div class="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-800">${escapeHtml(imp.section)}</span>
+          <div class="text-sm">
+            <p class="text-rose-700 font-medium">Что не так: <span class="font-normal text-slate-700">${escapeHtml(imp.issue)}</span></p>
+            <p class="text-emerald-700 font-medium mt-1.5">Как исправить: <span class="font-normal text-slate-700">${escapeHtml(imp.suggestion)}</span></p>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('improved-resume-box').textContent = result.improvedResumeText;
+
+      mountSectionFeedbackBar('feedback-skills_analysis', 'skills_analysis', 'Анализ навыков');
+      mountSectionFeedbackBar('feedback-resume_improvement', 'resume_improvement', 'Улучшение резюме');
+
+      state.developmentPlan = null;
+      state.completedTaskIds = {};
+      document.getElementById('plan-actions-initial').classList.remove('hidden');
+      document.getElementById('plan-actions-ready').classList.add('hidden');
+      document.getElementById('plan-actions-ready').classList.remove('flex');
+      document.getElementById('plan-content-wrapper').classList.add('hidden');
+
+      resetInterviewUI();
+      renderTelemetry();
+      refreshIcons();
+    }
+
+    function renderDevelopmentPlan() {
+      const plan = state.developmentPlan;
+      if (!plan) return;
+
+      document.getElementById('plan-actions-initial').classList.add('hidden');
+      const readyActions = document.getElementById('plan-actions-ready');
+      readyActions.classList.remove('hidden');
+      readyActions.classList.add('flex');
+
+      const contentWrapper = document.getElementById('plan-content-wrapper');
+      contentWrapper.classList.remove('hidden');
+
+      document.getElementById('plan-priority-skills-title').textContent =
+        `Приоритетные навыки для освоения (${plan.prioritySkills.length})`;
+
+      document.getElementById('plan-priority-skills-list').innerHTML = plan.prioritySkills.map((item, idx) => `
+        <div class="rounded-xl border border-slate-200/90 bg-slate-50/60 p-4 sm:p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold shrink-0">${idx + 1}</span>
+              <h5 class="font-bold text-base text-slate-900">${escapeHtml(item.skill)}</h5>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">Приоритет #${idx + 1}</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <div class="rounded-lg bg-white border border-slate-200/70 p-3">
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Почему важно для вакансии</p>
+              <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(item.whyImportant)}</p>
+            </div>
+            <div class="rounded-lg bg-white border border-slate-200/70 p-3">
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Чему конкретно научиться</p>
+              <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(item.whatToLearn)}</p>
+            </div>
+            <div class="rounded-lg bg-white border border-slate-200/70 p-3">
+              <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wide">Формат практики</p>
+              <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(item.practiceFormat)}</p>
+            </div>
+            <div class="rounded-lg bg-white border border-slate-200/70 p-3">
+              <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wide">Чем доказать навык в резюме</p>
+              <p class="text-slate-800 mt-1 leading-relaxed">${escapeHtml(item.resumeProof)}</p>
+            </div>
+          </div>
+        </div>`).join('');
+
+      renderPlanWeeks();
+      document.getElementById('plan-resume-after').textContent = plan.resumeAfterPlan;
+      mountSectionFeedbackBar('feedback-development_plan', 'development_plan', 'План развития');
+      refreshIcons();
+    }
+
+    function renderPlanWeeks() {
+      const plan = state.developmentPlan;
+      if (!plan) return;
+
+      const total = plan.weeks.reduce((sum, w) => sum + w.tasks.length, 0);
+      const done = plan.weeks.reduce((sum, w) => sum + w.tasks.filter((t) => state.completedTaskIds[t.id]).length, 0);
+      document.getElementById('plan-progress-badge').textContent = `Выполнено задач: ${done} из ${total}`;
+
+      const grid = document.getElementById('plan-weeks-grid');
+      grid.innerHTML = plan.weeks.map((week) => {
+        const weekDone = week.tasks.filter((t) => state.completedTaskIds[t.id]).length;
+        const allDone = week.tasks.length > 0 && weekDone === week.tasks.length;
+        return `
+          <div class="rounded-2xl border p-4 sm:p-5 flex flex-col justify-between transition-all ${allDone ? 'bg-emerald-50/40 border-emerald-200' : 'bg-white border-slate-200/90'}">
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-600 text-white">Неделя ${week.weekNumber}</span>
+                  <h5 class="font-bold text-slate-900 mt-1.5 text-base">${escapeHtml(week.title)}</h5>
+                  <p class="text-xs text-slate-500 mt-0.5">Фокус: <span class="font-medium text-slate-700">${escapeHtml(week.focusSkill)}</span></p>
+                </div>
+                <span class="text-xs font-semibold text-slate-500 shrink-0">${weekDone}/${week.tasks.length}</span>
+              </div>
+              <ul class="space-y-2.5 pt-1">
+                ${week.tasks.map((task) => {
+                  const checked = Boolean(state.completedTaskIds[task.id]);
+                  return `
+                    <li>
+                      <button type="button" data-task-id="${escapeHtml(task.id)}" class="w-full text-left rounded-xl border p-3 flex items-start gap-2.5 transition-all cursor-pointer ${
+                        checked
+                          ? 'bg-emerald-50/70 border-emerald-200/80 text-slate-500'
+                          : 'bg-slate-50/70 hover:bg-indigo-50/40 border-slate-200/80 text-slate-800'
+                      }">
+                        <i data-lucide="${checked ? 'check-square' : 'square'}" class="w-4 h-4 ${checked ? 'text-emerald-600' : 'text-indigo-500'} shrink-0 mt-0.5"></i>
+                        <div class="flex-1 space-y-1">
+                          <p class="text-xs sm:text-sm leading-relaxed ${checked ? 'line-through text-slate-500' : 'text-slate-800'}">${escapeHtml(task.text)}</p>
+                          <span class="inline-block text-[11px] font-medium px-2 py-0.5 rounded bg-white text-indigo-700 border border-indigo-100">
+                            Тип ресурса: ${escapeHtml(task.resourceType)}
+                          </span>
+                        </div>
+                      </button>
+                    </li>`;
+                }).join('')}
+              </ul>
+            </div>
+          </div>`;
+      }).join('');
+
+      grid.querySelectorAll('button[data-task-id]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-task-id');
+          state.completedTaskIds[id] = !state.completedTaskIds[id];
+          renderPlanWeeks();
+        });
+      });
+
+      refreshIcons();
+    }
+
+    // ============================================================================
+    // ШАГ 3: ТРЕНАЖЁР СОБЕСЕДОВАНИЯ (STAR)
+    // ============================================================================
+    function resetInterviewUI() {
+      state.interviewQuestions = [];
+      state.interviewIndex = 0;
+      state.interviewEvaluation = null;
+      state.interviewHistory = [];
+      state.interviewCompleted = false;
+
+      document.getElementById('interview-start-card').classList.remove('hidden');
+      document.getElementById('interview-active-card').classList.add('hidden');
+      document.getElementById('interview-summary-card').classList.add('hidden');
+      document.getElementById('interview-error-box').classList.add('hidden');
+    }
+
+    function renderActiveInterviewQuestion() {
+      const q = state.interviewQuestions[state.interviewIndex];
+      if (!q) return;
+
+      document.getElementById('interview-start-card').classList.add('hidden');
+      document.getElementById('interview-summary-card').classList.add('hidden');
+      document.getElementById('interview-active-card').classList.remove('hidden');
+
+      const total = state.interviewQuestions.length;
+      document.getElementById('interview-progress-text').textContent = `Вопрос ${state.interviewIndex + 1} из ${total}`;
+      document.getElementById('interview-focus-badge').textContent = q.focusArea;
+      document.getElementById('interview-progress-bar').style.width = `${((state.interviewIndex + 1) / total) * 100}%`;
+      document.getElementById('interview-question-text').textContent = q.question;
+      document.getElementById('interview-hint-text').textContent = q.hint;
+
+      const input = document.getElementById('interview-answer-input');
+      input.value = '';
+      input.disabled = false;
+
+      document.getElementById('submit-answer-row').classList.remove('hidden');
+      const submitBtn = document.getElementById('submit-answer-btn');
+      submitBtn.disabled = true;
+      submitBtn.className = 'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all bg-slate-200 text-slate-400 cursor-not-allowed';
+      submitBtn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Отправить ответ</span>';
+
+      document.getElementById('star-evaluation-box').classList.add('hidden');
+      refreshIcons();
+    }
+
+    function renderStarEvaluation(evalData) {
+      document.getElementById('interview-answer-input').disabled = true;
+      document.getElementById('submit-answer-row').classList.add('hidden');
+
+      const box = document.getElementById('star-evaluation-box');
+      box.classList.remove('hidden');
+
+      const score = evalData.score;
+      const colorClass = score >= 8
+        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+        : score >= 5
+        ? 'bg-amber-50 text-amber-700 border-amber-200'
+        : 'bg-rose-50 text-rose-700 border-rose-200';
+
+      const scoreBadge = document.getElementById('star-score-badge');
+      scoreBadge.className = `inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-base font-extrabold self-start sm:self-auto ${colorClass}`;
+      scoreBadge.innerHTML = `<span>${score}</span><span class="text-xs font-semibold opacity-80">/ 10 баллов</span>`;
+
+      const items = [
+        { title: 'Ситуация (Situation)', data: evalData.starBreakdown.situation },
+        { title: 'Задача (Task)', data: evalData.starBreakdown.task },
+        { title: 'Действие (Action)', data: evalData.starBreakdown.action },
+        { title: 'Результат (Result)', data: evalData.starBreakdown.result },
+      ];
+
+      document.getElementById('star-breakdown-grid').innerHTML = items.map((it) => `
+        <div class="rounded-xl p-3.5 border ${it.data.present ? 'bg-emerald-50/60 border-emerald-200/80' : 'bg-rose-50/50 border-rose-200/80'}">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="font-semibold text-sm text-slate-900">${escapeHtml(it.title)}</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${it.data.present ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${it.data.present ? 'Есть' : 'Нет'}
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${escapeHtml(it.data.comment)}</p>
+        </div>`).join('');
+
+      document.getElementById('star-improve-text').textContent = evalData.whatToImprove;
+      document.getElementById('star-strong-example').textContent = evalData.strongAnswerExample;
+
+      document.getElementById('next-question-btn-label').textContent =
+        state.interviewIndex + 1 < state.interviewQuestions.length
+          ? 'Следующий вопрос'
+          : 'Завершить и посмотреть итоги';
+
+      mountSectionFeedbackBar('feedback-interview_evaluation', 'interview_evaluation', 'Оценка ответа на собеседовании');
+      refreshIcons();
+    }
+
+    function renderInterviewSummary() {
+      document.getElementById('interview-active-card').classList.add('hidden');
+      document.getElementById('interview-summary-card').classList.remove('hidden');
+
+      const hist = state.interviewHistory;
+      const avg = hist.length
+        ? (hist.reduce((acc, r) => acc + r.evaluation.score, 0) / hist.length).toFixed(1)
+        : '0';
+
+      document.getElementById('interview-summary-subtitle').textContent =
+        `Вы ответили на все ${hist.length} вопросов и получили разбор по методу STAR`;
+      document.getElementById('interview-avg-score').textContent = `${avg} / 10`;
+
+      document.getElementById('interview-history-list').innerHTML = hist.map((rec, idx) => {
+        const sc = rec.evaluation.score;
+        const cClass = sc >= 8
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : sc >= 5
+          ? 'bg-amber-50 text-amber-700 border-amber-200'
+          : 'bg-rose-50 text-rose-700 border-rose-200';
+        return `
+          <div class="rounded-xl border border-slate-200/90 bg-slate-50/60 p-4 space-y-2">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm font-semibold text-slate-900">${idx + 1}. ${escapeHtml(rec.question.question)}</p>
+              <span class="shrink-0 px-2.5 py-0.5 rounded-lg text-xs font-bold border ${cClass}">${sc}/10</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600"><span class="font-medium text-slate-800">Рекомендация:</span> ${escapeHtml(rec.evaluation.whatToImprove)}</p>
+          </div>`;
+      }).join('');
+      refreshIcons();
+    }
+
+    // ============================================================================
+    // ЭКСПОРТ ОТЧЁТОВ И РЕЗЮМЕ (PDF / TXT)
+    // ============================================================================
+    async function exportHtmlToPdf(innerHtml, filename) {
+      await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+      const container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-9999px;top:0;width:760px;background:#fff;color:#0f172a;font-family:Arial,sans-serif;font-size:13px;line-height:1.55;padding:28px 32px;';
+      container.innerHTML = innerHtml;
+      document.body.appendChild(container);
+      try {
+        await window.html2pdf()
+          .set({
+            margin: [12, 12, 12, 12],
+            filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          })
+          .from(container)
+          .save();
+      } finally {
+        document.body.removeChild(container);
+      }
+    }
+
+    // ============================================================================
+    // ИНИЦИАЛИЗАЦИЯ И ОБРАБОТЧИКИ СОБЫТИЙ
+    // ============================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('rules-grid').innerHTML = KNOWLEDGE_BASE_UI_SUMMARY.map((rule) => `
+        <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">${escapeHtml(rule.number)}</span>
+          <div>
+            <h4 class="text-sm font-semibold text-slate-900">${escapeHtml(rule.title)}</h4>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${escapeHtml(rule.description)}</p>
+          </div>
+        </div>`).join('');
+
+      updateHeaderStatus();
+      updateStep1Controls();
+      refreshIcons();
+
+      // --- Модальное окно настроек ---
+      const modal = document.getElementById('api-modal');
+      const modelSelect = document.getElementById('gemini-model-select');
+      const testSwitch = document.getElementById('testing-mode-switch');
+      const testKnob = document.getElementById('testing-mode-knob');
+
+      function syncModalSwitch(enabled) {
+        state.modalTestingMode = enabled;
+        testSwitch.setAttribute('aria-checked', String(enabled));
+        testSwitch.className = `relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/30 cursor-pointer ${enabled ? 'bg-indigo-600' : 'bg-slate-300'}`;
+        testKnob.className = `pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${enabled ? 'translate-x-5' : 'translate-x-0'}`;
+      }
+
+      function openSettingsModal() {
+        if (!Array.from(modelSelect.options).some((o) => o.value === state.selectedModel)) {
+          const opt = document.createElement('option');
+          opt.value = state.selectedModel;
+          opt.textContent = state.selectedModel;
+          modelSelect.prepend(opt);
+        }
+        modelSelect.value = state.selectedModel;
+        syncModalSwitch(state.isTestingMode);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function closeSettingsModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      document.getElementById('open-settings-btn').addEventListener('click', openSettingsModal);
+      document.getElementById('analysis-error-settings-btn').addEventListener('click', openSettingsModal);
+      document.getElementById('plan-error-settings-btn').addEventListener('click', openSettingsModal);
+      document.getElementById('interview-error-settings-btn').addEventListener('click', openSettingsModal);
+      document.getElementById('close-modal-btn').addEventListener('click', closeSettingsModal);
+      document.getElementById('cancel-modal-btn').addEventListener('click', closeSettingsModal);
+
+      testSwitch.addEventListener('click', () => syncModalSwitch(!state.modalTestingMode));
+
+      document.getElementById('api-settings-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        state.selectedModel = modelSelect.value;
+        state.isTestingMode = state.modalTestingMode;
+        localStorage.setItem(STORAGE_KEYS.MODEL, state.selectedModel);
+        localStorage.setItem(STORAGE_KEYS.TESTING, state.isTestingMode ? 'true' : 'false');
+
+        updateHeaderStatus();
+        renderTelemetry();
+        hideAnalysisError();
+        closeSettingsModal();
+      });
+
+      // --- Поля ввода и загрузка файлов ---
+      const resumeTextarea = document.getElementById('resume-textarea');
+      const jobTextarea = document.getElementById('job-textarea');
+      const demoSelect = document.getElementById('demo-select');
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('resume-file-input');
+
+      resumeTextarea.addEventListener('input', () => {
+        state.resumeText = resumeTextarea.value;
+        if (state.selectedDemoId) {
+          state.selectedDemoId = '';
+          demoSelect.value = '';
+        }
+        updateStep1Controls();
+      });
+
+      jobTextarea.addEventListener('input', () => {
+        state.jobText = jobTextarea.value;
+        if (state.selectedDemoId) {
+          state.selectedDemoId = '';
+          demoSelect.value = '';
+        }
+        updateStep1Controls();
+      });
+
+      demoSelect.addEventListener('change', () => {
+        const id = demoSelect.value;
+        state.selectedDemoId = id;
+        document.getElementById('file-success-banner').classList.add('hidden');
+        document.getElementById('file-error-banner').classList.add('hidden');
+        if (id && DEMO_SCENARIOS[id]) {
+          state.resumeText = DEMO_SCENARIOS[id].resumeText;
+          state.jobText = DEMO_SCENARIOS[id].jobText;
+          resumeTextarea.value = state.resumeText;
+          jobTextarea.value = state.jobText;
+          hideAnalysisError();
+        }
+        updateStep1Controls();
+      });
+
+      document.getElementById('clear-resume-btn').addEventListener('click', () => {
+        state.resumeText = '';
+        resumeTextarea.value = '';
+        document.getElementById('file-success-banner').classList.add('hidden');
+        document.getElementById('file-error-banner').classList.add('hidden');
+        updateStep1Controls();
+      });
+
+      document.getElementById('clear-job-btn').addEventListener('click', () => {
+        state.jobText = '';
+        jobTextarea.value = '';
+        updateStep1Controls();
+      });
+
+      document.getElementById('clear-all-btn').addEventListener('click', () => {
+        state.resumeText = '';
+        state.jobText = '';
+        state.selectedDemoId = '';
+        state.analysisResult = null;
+        resumeTextarea.value = '';
+        jobTextarea.value = '';
+        demoSelect.value = '';
+        document.getElementById('file-success-banner').classList.add('hidden');
+        document.getElementById('file-error-banner').classList.add('hidden');
+        document.getElementById('results-wrapper').classList.add('hidden');
+        hideAnalysisError();
+        updateStep1Controls();
+      });
+
+      async function handleUploadedFile(file) {
+        if (!file) return;
+        const idle = document.getElementById('drop-zone-idle');
+        const loading = document.getElementById('drop-zone-loading');
+        const successBanner = document.getElementById('file-success-banner');
+        const errorBanner = document.getElementById('file-error-banner');
+
+        errorBanner.classList.add('hidden');
+        successBanner.classList.add('hidden');
+        idle.classList.add('hidden');
+        loading.classList.remove('hidden');
+        loading.classList.add('flex');
+
+        try {
+          const text = await parseResumeFile(file);
+          state.resumeText = text;
+          resumeTextarea.value = text;
+          document.getElementById('file-success-name').textContent = `Загружен файл: ${file.name}`;
+          successBanner.classList.remove('hidden');
+          successBanner.classList.add('flex');
+          updateStep1Controls();
+        } catch (err) {
+          document.getElementById('file-error-text').textContent = err.message;
+          errorBanner.classList.remove('hidden');
+          errorBanner.classList.add('flex');
+        } finally {
+          loading.classList.add('hidden');
+          loading.classList.remove('flex');
+          idle.classList.remove('hidden');
+          fileInput.value = '';
+        }
+      }
+
+      dropZone.addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => handleUploadedFile(e.target.files?.[0]));
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-indigo-500', 'bg-indigo-50/70');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/70');
+      });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-50/70');
+        handleUploadedFile(e.dataTransfer.files?.[0]);
+      });
+      document.getElementById('close-file-banner').addEventListener('click', () => {
+        document.getElementById('file-success-banner').classList.add('hidden');
+      });
+
+      // --- Кнопка «Проанализировать соответствие» ---
+      document.getElementById('analyze-btn').addEventListener('click', async () => {
+        if (!state.resumeText.trim() || !state.jobText.trim() || state.isAnalyzing) return;
+        state.isAnalyzing = true;
+        hideAnalysisError();
+        updateStep1Controls();
+
+        const prompt = `Выполни полный анализ соответствия резюме кандидата и описания вакансии строго по правилам и всем 9 разделам Базы знаний Career AI.
+
+РЕЗЮМЕ КАНДИДАТА:
+"""
+${state.resumeText.slice(0, 18000)}
+"""
+
+ОПИСАНИЕ ВАКАНСИИ:
+"""
+${state.jobText.slice(0, 18000)}
+"""
+
+Если тексты не похожи на резюме или вакансию — верни {"isInvalidInput": true, "refusalMessage": "Вежливое объяснение на русском языке"}.
+Иначе верни строго JSON:
+{
+  "isInvalidInput": false,
+  "matchScore": number (целое от 0 до 100 по весам 50/25/15/10),
+  "summary": string (вывод в 2 предложения: из чего сложился процент),
+  "extractedData": {
+    "education": string[],
+    "skills": string[],
+    "experience": string[]
+  },
+  "matchingSkills": [{ "skill": string, "explanation": string }],
+  "missingSkills": [{ "skill": string, "explanation": string }],
+  "improvements": [{ "section": string, "issue": string, "suggestion": string }],
+  "improvedResumeText": string
+}`;
+
+        try {
+          const raw = await callGeminiApi(prompt, 0.35, 'Анализ соответствия резюме и вакансии');
+          if (raw?.isInvalidInput) {
+            throw new Error(raw.refusalMessage || 'Один из введённых текстов не похож на резюме или описание вакансии.');
+          }
+          state.analysisResult = {
+            matchScore: Math.max(0, Math.min(100, Math.round(Number(raw.matchScore) || 0))),
+            summary: raw.summary || 'Анализ выполнен.',
+            extractedData: {
+              education: Array.isArray(raw.extractedData?.education) ? raw.extractedData.education : [],
+              skills: Array.isArray(raw.extractedData?.skills) ? raw.extractedData.skills : [],
+              experience: Array.isArray(raw.extractedData?.experience) ? raw.extractedData.experience : [],
+            },
+            matchingSkills: Array.isArray(raw.matchingSkills) ? raw.matchingSkills : [],
+            missingSkills: Array.isArray(raw.missingSkills) ? raw.missingSkills : [],
+            improvements: Array.isArray(raw.improvements) ? raw.improvements : [],
+            improvedResumeText: raw.improvedResumeText || 'Не удалось сгенерировать обновлённый текст резюме.',
+          };
+          renderAnalysisResults(state.analysisResult);
+          setTimeout(() => {
+            document.getElementById('results-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        } catch (err) {
+          showAnalysisError(err.message, err.code === 'NO_KEY' || err.code === 'INVALID_KEY');
+        } finally {
+          state.isAnalyzing = false;
+          updateStep1Controls();
+        }
+      });
+
+      // --- Копирование и скачивание резюме и отчёта ---
+      document.getElementById('copy-resume-btn').addEventListener('click', async () => {
+        if (!state.analysisResult) return;
+        const btn = document.getElementById('copy-resume-btn');
+        try {
+          await navigator.clipboard.writeText(state.analysisResult.improvedResumeText);
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = state.analysisResult.improvedResumeText;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        btn.className = 'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-emerald-600 text-white shadow-xs transition-all cursor-pointer';
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>Скопировано!</span>';
+        refreshIcons();
+        setTimeout(() => {
+          btn.className = 'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-all cursor-pointer';
+          btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i><span>Скопировать</span>';
+          refreshIcons();
+        }, 2400);
+      });
+
+      document.getElementById('download-resume-txt-btn').addEventListener('click', () => {
+        if (!state.analysisResult) return;
+        triggerDownload(new Blob([state.analysisResult.improvedResumeText], { type: 'text/plain;charset=utf-8' }), 'Career_AI_Uluchshennoe_Rezyume.txt');
+      });
+
+      document.getElementById('download-resume-pdf-btn').addEventListener('click', async () => {
+        if (!state.analysisResult) return;
+        try {
+          const lines = state.analysisResult.improvedResumeText.split('\n').map((l) => {
+            const t = l.trim();
+            if (!t) return '<div style="height:8px"></div>';
+            return `<p style="margin:0 0 5px;color:#1e293b">${escapeHtml(t)}</p>`;
+          }).join('');
+          await exportHtmlToPdf(`<div><h2 style="color:#312e81;border-bottom:2px solid #4f46e5;padding-bottom:8px;margin-bottom:14px">Career AI • Улучшенное резюме</h2>${lines}</div>`, 'Career_AI_Uluchshennoe_Rezyume.pdf');
+        } catch (err) {
+          const box = document.getElementById('export-error-box');
+          document.getElementById('export-error-text').textContent = err.message;
+          box.classList.remove('hidden');
+          box.classList.add('flex');
+        }
+      });
+
+      const reportDropdown = document.getElementById('report-menu-dropdown');
+      document.getElementById('report-menu-btn').addEventListener('click', () => {
+        reportDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', (e) => {
+        if (!document.getElementById('report-menu-wrapper').contains(e.target)) {
+          reportDropdown.classList.add('hidden');
+        }
+      });
+      document.getElementById('close-export-error').addEventListener('click', () => {
+        document.getElementById('export-error-box').classList.add('hidden');
+      });
+
+      document.getElementById('download-report-txt-btn').addEventListener('click', () => {
+        reportDropdown.classList.add('hidden');
+        const r = state.analysisResult;
+        if (!r) return;
+        const txt = [
+          'CAREER AI — ОТЧЁТ АНАЛИЗА СООТВЕТСТВИЯ ВАКАНСИИ',
+          `Соответствие: ${r.matchScore}%`,
+          `Вывод: ${r.summary}`,
+          '',
+          'ЧТО УЖЕ ПОДХОДИТ:',
+          ...r.matchingSkills.map((m) => `• ${m.skill}: ${m.explanation}`),
+          '',
+          'ЧЕГО НЕ ХВАТАЕТ:',
+          ...r.missingSkills.map((m) => `• ${m.skill}: ${m.explanation}`),
+          '',
+          'УЛУЧШЕННОЕ РЕЗЮМЕ:',
+          r.improvedResumeText,
+        ].join('\n');
+        triggerDownload(new Blob([txt], { type: 'text/plain;charset=utf-8' }), 'Career_AI_Otchet_Analiza.txt');
+      });
+
+      document.getElementById('download-report-pdf-btn').addEventListener('click', async () => {
+        reportDropdown.classList.add('hidden');
+        const r = state.analysisResult;
+        if (!r) return;
+        try {
+          const html = `
+            <div>
+              <h1 style="font-size:20px;color:#0f172a;border-bottom:2px solid #4f46e5;padding-bottom:10px">Career AI — Отчёт анализа (${r.matchScore}%)</h1>
+              <p style="margin:12px 0;color:#334155">${escapeHtml(r.summary)}</p>
+              <h3 style="color:#065f46;margin:14px 0 6px">Что уже подходит</h3>
+              <ul>${r.matchingSkills.map((m) => `<li><b>${escapeHtml(m.skill)}:</b> ${escapeHtml(m.explanation)}</li>`).join('')}</ul>
+              <h3 style="color:#92400e;margin:14px 0 6px">Чего не хватает</h3>
+              <ul>${r.missingSkills.map((m) => `<li><b>${escapeHtml(m.skill)}:</b> ${escapeHtml(m.explanation)}</li>`).join('')}</ul>
+              <h3 style="color:#1e1b4b;margin:14px 0 6px">Улучшенный текст резюме</h3>
+              <div style="white-space:pre-wrap;background:#f8fafc;padding:12px;border:1px solid #e2e8f0;border-radius:8px">${escapeHtml(r.improvedResumeText)}</div>
+            </div>`;
+          await exportHtmlToPdf(html, 'Career_AI_Otchet_Analiza.pdf');
+        } catch (err) {
+          const box = document.getElementById('export-error-box');
+          document.getElementById('export-error-text').textContent = err.message;
+          box.classList.remove('hidden');
+          box.classList.add('flex');
+        }
+      });
+
+      // --- План развития на 4 недели ---
+      async function handleGenerateDevelopmentPlan() {
+        if (!state.analysisResult || state.isGeneratingPlan) return;
+        state.isGeneratingPlan = true;
+        const btn = document.getElementById('generate-plan-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Составляем план развития...</span>';
+        document.getElementById('plan-error-box').classList.add('hidden');
+        refreshIcons();
+
+        const missingText = state.analysisResult.missingSkills
+          .slice(0, 5)
+          .map((m, i) => `${i + 1}. ${m.skill} — ${m.explanation}`)
+          .join('\n') || 'Определи до 5 приоритетных зон роста на основе сравнения резюме и вакансии.';
+
+        const prompt = `Составь персональный «План развития на 4 недели» для кандидата. Не выдумывай URL-ссылки и названия платных курсов — в "resourceType" пиши только тип ресурса (документация, учебный мини-проект, справочник и т.д.).
+
+РЕЗЮМЕ:
+"""
+${state.resumeText.slice(0, 12000)}
+"""
+ВАКАНСИЯ:
+"""
+${state.jobText.slice(0, 12000)}
+"""
+НЕДОСТАЮЩИЕ НАВЫКИ:
+${missingText}
+
+Верни строго JSON:
+{
+  "prioritySkills": [{ "priority": 1, "skill": string, "whyImportant": string, "whatToLearn": string, "practiceFormat": string, "resumeProof": string }],
+  "weeks": [{ "weekNumber": 1, "title": string, "focusSkill": string, "tasks": [{ "id": "w1-t1", "text": string, "resourceType": string }] }],
+  "resumeAfterPlan": string
+}`;
+
+        try {
+          const raw = await callGeminiApi(prompt, 0.4, 'Составление плана развития на 4 недели');
+          state.developmentPlan = {
+            prioritySkills: Array.isArray(raw.prioritySkills) ? raw.prioritySkills.slice(0, 5) : [],
+            weeks: [1, 2, 3, 4].map((n) => {
+              const found = (raw.weeks || []).find((w) => Number(w.weekNumber) === n) || (raw.weeks || [])[n - 1] || {};
+              return {
+                weekNumber: n,
+                title: found.title || `Этап ${n}: Освоение и практика`,
+                focusSkill: found.focusSkill || 'Профильные навыки',
+                tasks: (found.tasks || []).map((t, idx) => ({
+                  id: t.id || `w${n}-t${idx + 1}`,
+                  text: t.text || 'Выполнить практическое задание',
+                  resourceType: t.resourceType || 'учебный мини-проект',
+                })),
+              };
+            }),
+            resumeAfterPlan: raw.resumeAfterPlan || 'После выполнения плана добавьте освоенные навыки и мини-проекты в резюме.',
+          };
+          state.completedTaskIds = {};
+          renderDevelopmentPlan();
+        } catch (err) {
+          const box = document.getElementById('plan-error-box');
+          document.getElementById('plan-error-text').textContent = err.message;
+          box.classList.remove('hidden');
+          box.classList.add('flex');
+          document.getElementById('plan-error-settings-btn').classList.toggle('hidden', err.code !== 'NO_KEY' && err.code !== 'INVALID_KEY');
+        } finally {
+          state.isGeneratingPlan = false;
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="target" class="w-4 h-4"></i><span>Составить план развития</span>';
+          refreshIcons();
+        }
+      }
+
+      document.getElementById('generate-plan-btn').addEventListener('click', handleGenerateDevelopmentPlan);
+      document.getElementById('regenerate-plan-btn').addEventListener('click', handleGenerateDevelopmentPlan);
+      document.getElementById('download-plan-txt-btn').addEventListener('click', () => {
+        const p = state.developmentPlan;
+        if (!p) return;
+        const lines = [
+          'CAREER AI — ПЛАН РАЗВИТИЯ НА 4 НЕДЕЛИ',
+          '',
+          ...p.weeks.flatMap((w) => [
+            `НЕДЕЛЯ ${w.weekNumber}: ${w.title} (${w.focusSkill})`,
+            ...w.tasks.map((t) => `  ${state.completedTaskIds[t.id] ? '[x]' : '[ ]'} ${t.text} [${t.resourceType}]`),
+            '',
+          ]),
+          'КАК ОБНОВИТСЯ РЕЗЮМЕ:',
+          p.resumeAfterPlan,
+        ];
+        triggerDownload(new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }), 'Career_AI_Plan_Razvitiya_4_Nedeli.txt');
+      });
+
+      // --- Сворачиваемый блок правил ---
+      let rulesOpen = false;
+      document.getElementById('toggle-rules-btn').addEventListener('click', () => {
+        rulesOpen = !rulesOpen;
+        document.getElementById('rules-content').classList.toggle('hidden', !rulesOpen);
+        document.getElementById('toggle-rules-btn').setAttribute('aria-expanded', String(rulesOpen));
+        document.getElementById('toggle-rules-label').innerHTML = rulesOpen
+          ? '<span>Свернуть</span><i data-lucide="chevron-up" class="w-4 h-4"></i>'
+          : '<span>Подробнее</span><i data-lucide="chevron-down" class="w-4 h-4"></i>';
+        refreshIcons();
+      });
+
+      // --- Тренажёр собеседования (STAR) ---
+      async function startInterviewTraining() {
+        if (!state.analysisResult || state.isGeneratingInterview) return;
+        state.isGeneratingInterview = true;
+        document.getElementById('interview-error-box').classList.add('hidden');
+        const startBtn = document.getElementById('start-interview-btn');
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Готовлю вопросы под вакансию...</span>';
+        refreshIcons();
+
+        const gapsText = state.analysisResult.missingSkills.map((m) => `${m.skill}: ${m.explanation}`).join('; ') || 'Общая проверка компетенций';
+        const prompt = `Составь ровно 5 вопросов для собеседования на указанную вакансию по Разделу 7 Базы знаний (2–3 профессиональных/кейсовых по пробелам кандидата и 2–3 поведенческих по STAR).
+ВАКАНСИЯ:
+"""
+${state.jobText.slice(0, 12000)}
+"""
+РЕЗЮМЕ:
+"""
+${state.resumeText.slice(0, 12000)}
+"""
+ПРОБЕЛЫ: ${gapsText}
+
+Верни строго JSON:
+{
+  "questions": [
+    { "id": 1, "question": string, "focusArea": string, "hint": string }
+  ]
+}`;
+
+        try {
+          const raw = await callGeminiApi(prompt, 0.5, 'Генерация 5 вопросов для собеседования');
+          if (!Array.isArray(raw.questions) || raw.questions.length === 0) {
+            throw new Error('Не удалось сгенерировать вопросы. Попробуйте ещё раз.');
+          }
+          state.interviewQuestions = raw.questions.slice(0, 5).map((q, i) => ({
+            id: i + 1,
+            question: q.question || `Вопрос №${i + 1}`,
+            focusArea: q.focusArea || 'Компетенции',
+            hint: q.hint || 'Отвечайте по схеме Ситуация → Задача → Действие → Результат.',
+          }));
+          state.interviewIndex = 0;
+          state.interviewHistory = [];
+          state.interviewCompleted = false;
+          renderActiveInterviewQuestion();
+        } catch (err) {
+          const box = document.getElementById('interview-error-box');
+          document.getElementById('interview-error-text').textContent = err.message;
+          box.classList.remove('hidden');
+          box.classList.add('flex');
+          document.getElementById('interview-error-settings-btn').classList.toggle('hidden', err.code !== 'NO_KEY' && err.code !== 'INVALID_KEY');
+        } finally {
+          state.isGeneratingInterview = false;
+          startBtn.disabled = false;
+          startBtn.innerHTML = '<span>Начать тренировку собеседования</span><i data-lucide="arrow-right" class="w-5 h-5"></i>';
+          refreshIcons();
+        }
+      }
+
+      document.getElementById('start-interview-btn').addEventListener('click', startInterviewTraining);
+      document.getElementById('restart-interview-btn').addEventListener('click', startInterviewTraining);
+
+      const answerInput = document.getElementById('interview-answer-input');
+      const submitAnswerBtn = document.getElementById('submit-answer-btn');
+
+      answerInput.addEventListener('input', () => {
+        const hasText = answerInput.value.trim().length > 0 && !state.isEvaluatingAnswer;
+        submitAnswerBtn.disabled = !hasText;
+        submitAnswerBtn.className = hasText
+          ? 'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer'
+          : 'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all bg-slate-200 text-slate-400 cursor-not-allowed';
+      });
+
+      submitAnswerBtn.addEventListener('click', async () => {
+        const q = state.interviewQuestions[state.interviewIndex];
+        const ans = answerInput.value.trim();
+        if (!q || !ans || state.isEvaluatingAnswer) return;
+
+        state.isEvaluatingAnswer = true;
+        submitAnswerBtn.disabled = true;
+        submitAnswerBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Оцениваю ответ...</span>';
+        refreshIcons();
+
+        const prompt = `Оцени ответ кандидата по методу STAR (Раздел 7 Базы знаний). Пример сильного ответа построй строго на реальных фактах из резюме кандидата.
+ВАКАНСИЯ: ${state.jobText.slice(0, 6000)}
+РЕЗЮМЕ: ${state.resumeText.slice(0, 6000)}
+ВОПРОС: "${q.question}"
+ОТВЕТ: "${ans.slice(0, 6000)}"
+
+Верни строго JSON:
+{
+  "score": number (от 1 до 10),
+  "starBreakdown": {
+    "situation": { "present": boolean, "comment": string },
+    "task": { "present": boolean, "comment": string },
+    "action": { "present": boolean, "comment": string },
+    "result": { "present": boolean, "comment": string }
+  },
+  "whatToImprove": string,
+  "strongAnswerExample": string
+}`;
+
+        try {
+          const raw = await callGeminiApi(prompt, 0.4, 'Оценка ответа кандидата по методу STAR');
+          const evalData = {
+            score: Math.max(1, Math.min(10, Math.round(Number(raw.score) || 5))),
+            starBreakdown: {
+              situation: { present: Boolean(raw.starBreakdown?.situation?.present), comment: raw.starBreakdown?.situation?.comment || 'Уточните контекст.' },
+              task: { present: Boolean(raw.starBreakdown?.task?.present), comment: raw.starBreakdown?.task?.comment || 'Уточните задачу.' },
+              action: { present: Boolean(raw.starBreakdown?.action?.present), comment: raw.starBreakdown?.action?.comment || 'Опишите личные действия.' },
+              result: { present: Boolean(raw.starBreakdown?.result?.present), comment: raw.starBreakdown?.result?.comment || 'Добавьте измеримый итог.' },
+            },
+            whatToImprove: raw.whatToImprove || 'Структурируйте ответ по схеме STAR.',
+            strongAnswerExample: raw.strongAnswerExample || '',
+          };
+          state.interviewHistory.push({ question: q, userAnswer: ans, evaluation: evalData });
+          renderStarEvaluation(evalData);
+        } catch (err) {
+          const box = document.getElementById('interview-error-box');
+          document.getElementById('interview-error-text').textContent = err.message;
+          box.classList.remove('hidden');
+          box.classList.add('flex');
+          submitAnswerBtn.disabled = false;
+          submitAnswerBtn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i><span>Отправить ответ</span>';
+          refreshIcons();
+        } finally {
+          state.isEvaluatingAnswer = false;
+        }
+      });
+
+      document.getElementById('next-question-btn').addEventListener('click', () => {
+        if (state.interviewIndex + 1 < state.interviewQuestions.length) {
+          state.interviewIndex += 1;
+          renderActiveInterviewQuestion();
+        } else {
+          state.interviewCompleted = true;
+          renderInterviewSummary();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
