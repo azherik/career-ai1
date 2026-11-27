@@ -1,0 +1,16 @@
+{
+  "name": "career-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Career AI — Интеллектуальный помощник по поиску работы",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node --check server.js && node --check api/gemini.js && node --check api/feedback.js",
+    "lint": "node --check server.js && node --check api/gemini.js && node --check api/feedback.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

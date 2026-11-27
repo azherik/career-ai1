@@ -1,0 +1,8 @@
+{
+  "name": "Career AI",
+  "description": "Интеллектуальный помощник по поиску работы: анализ резюме, план развития и тренажёр собеседования по методу STAR.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
